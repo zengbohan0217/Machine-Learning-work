@@ -20,7 +20,7 @@ class SiameseNetwork(nn.Module):
         self.conv2 = nn.Conv2d(10, 20, 3)
         self.fc0 = nn.Linear(3380, 500)
         self.fc1 = nn.Linear(20 * 10 * 10, 500)
-        self.fc2 = nn.Linear(500, 5)
+        self.fc2 = nn.Linear(500, 20)
 
     def forward_once(self, x):
         in_size = x.size(0)
@@ -64,6 +64,24 @@ class ContrastiveLoss(torch.nn.Module):
 
         return loss_contrastive
 
+def test(model, device, test_loader):
+    model.eval()
+    correct = 0
+    eval_judge = 0
+    with torch.no_grad():
+        for i, data in enumerate(test_loader, 0):
+            img0, img1, label = data
+            img0, img1, label = img0.to(device), img1.to(device), label.to(device)
+            output1, output2 = model(img0, img1)
+            euclidean_distance = F.pairwise_distance(output1, output2, keepdim=True)
+            euclidean_distance = torch.mean(euclidean_distance).item()
+            if euclidean_distance < 0.01:
+                eval_judge = torch.tensor([1])
+            else:
+                eval_judge = torch.tensor([0])
+            correct += eval_judge.eq(label.view_as(torch.tensor(eval_judge))).sum().item()
+    return correct/len(test_loader)
+
 #net = SiameseNetwork().cuda() #定义模型且移至GPU
 net = SiameseNetwork().to(DEVICE)
 criterion = ContrastiveLoss() #定义损失函数
@@ -77,15 +95,17 @@ train_number_epochs = 20
 train_image_dir = '.\BMP600'
 train_data = SN_data.SN_dataset(image_dir=train_image_dir, repeat=1)
 train_loader = DataLoader(dataset=train_data, batch_size=40, shuffle=True)
+test_data = SN_data.SN_dataset(image_dir=train_image_dir, repeat=1)
+test_loader = DataLoader(dataset=test_data, batch_size=1, shuffle=True)
 
 #开始训练
 for epoch in range(0, train_number_epochs):
     for i, data in enumerate(train_loader, 0):
-        img0, img1 , label = data
+        img0, img1, label = data
         #img0维度为torch.Size([32, 1, 100, 100])，32是batch，label为torch.Size([32, 1])
-        img0, img1 , label = img0.to(DEVICE), img1.to(DEVICE), label.to(DEVICE) #数据移至GPU
+        img0, img1, label = img0.to(DEVICE), img1.to(DEVICE), label.to(DEVICE) #数据移至GPU
         optimizer.zero_grad()
-        output1,output2 = net(img0, img1)
+        output1, output2 = net(img0, img1)
         loss_contrastive = criterion(output1, output2, label)
         loss_contrastive.backward()
         optimizer.step()
@@ -93,4 +113,6 @@ for epoch in range(0, train_number_epochs):
             iteration_number +=10
             counter.append(iteration_number)
             loss_history.append(loss_contrastive.item())
-    print("Epoch number: {} , Current loss: {:.4f}\n".format(epoch, loss_contrastive.item()))
+    print("Epoch number: {} , Current loss: {:.4f}".format(epoch, loss_contrastive.item()))
+    accuracy = test(net, DEVICE, test_loader)
+    print("Epoch number: {} , test accuracy: {:.4f}".format(epoch, accuracy))
