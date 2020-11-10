@@ -6,12 +6,13 @@ from torch.utils.data import DataLoader, Dataset
 from PIL import Image
 
 class SN_dataset(Dataset):
-    def __init__(self, image_dir, resize_height=256, resize_width=256, repeat=1):
+    def __init__(self, image_dir, resize_height=256, resize_width=256, repeat=1, length=1600):
         self.image_dir = image_dir
         self.repeat = repeat
         self.resize_height = resize_height
         self.resize_width = resize_width
         self.toTensor = transforms.ToTensor()
+        self.length = length
 
     def __getitem__(self, i):
         num_1 = np.random.randint(0, 600)
@@ -33,20 +34,30 @@ class SN_dataset(Dataset):
         image_path_1 = os.path.join(self.image_dir, image_name_1)
         image_path_2 = os.path.join(self.image_dir, image_name_2)
         img_1 = self.load_data(image_path_1, self.resize_height,
-                               self.resize_width, normalization=False)
+                                self.resize_width, normalization=False)
         img_2 = self.load_data(image_path_2, self.resize_height,
-                               self.resize_width, normalization=False)
+                                self.resize_width, normalization=False)
         img_1 = self.data_preproccess(img_1)
         img_2 = self.data_preproccess(img_2)
         if group_1 == group_2:
             label = 1
         else:
             label = 0
+        if i >= self.length // 2:
+            image_name_1 = group_name_1 + '_' + in_name_1 + '.bmp'
+            image_path_1 = os.path.join(self.image_dir, image_name_1)
+            img_1 = self.load_data(image_path_1, self.resize_height,
+                                   self.resize_width, normalization=False)
+            img_2 = self.load_data(image_path_1, self.resize_height,
+                                   self.resize_width, normalization=False)
+            img_1 = self.data_preproccess(img_1)
+            img_2 = self.data_preproccess(img_2)
+            label = 1
         return img_1, img_2, label
 
 
     def __len__(self):
-        return 1600
+        return self.length
 
     def load_data(self, path, resize_height, resize_width, normalization):
         '''

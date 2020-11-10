@@ -75,7 +75,7 @@ def test(model, device, test_loader):
             output1, output2 = model(img0, img1)
             euclidean_distance = F.pairwise_distance(output1, output2, keepdim=True)
             euclidean_distance = torch.mean(euclidean_distance).item()
-            if euclidean_distance < 0.01:
+            if euclidean_distance < 0.0001:
                 eval_judge = torch.tensor([1])
             else:
                 eval_judge = torch.tensor([0])
@@ -95,7 +95,7 @@ train_number_epochs = 20
 train_image_dir = '.\BMP600'
 train_data = SN_data.SN_dataset(image_dir=train_image_dir, repeat=1)
 train_loader = DataLoader(dataset=train_data, batch_size=40, shuffle=True)
-test_data = SN_data.SN_dataset(image_dir=train_image_dir, repeat=1)
+test_data = SN_data.SN_dataset(image_dir=train_image_dir, repeat=1, length=800)
 test_loader = DataLoader(dataset=test_data, batch_size=1, shuffle=True)
 
 #开始训练
