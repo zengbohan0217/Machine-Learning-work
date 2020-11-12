@@ -95,15 +95,15 @@ train_number_epochs = 20
 train_image_dir = '.\BMP600'
 train_data = SN_data.SN_dataset(image_dir=train_image_dir, repeat=1)
 train_loader = DataLoader(dataset=train_data, batch_size=40, shuffle=True)
-test_data = SN_data.SN_dataset(image_dir=train_image_dir, repeat=1, length=800)
+test_data = SN_data.SN_dataset(image_dir=train_image_dir, repeat=1)
 test_loader = DataLoader(dataset=test_data, batch_size=1, shuffle=True)
 
 #开始训练
 for epoch in range(0, train_number_epochs):
     for i, data in enumerate(train_loader, 0):
         img0, img1, label = data
-        #img0维度为torch.Size([32, 1, 100, 100])，32是batch，label为torch.Size([32, 1])
-        img0, img1, label = img0.to(DEVICE), img1.to(DEVICE), label.to(DEVICE) #数据移至GPU
+        # img0维度为torch.Size([32, 1, 100, 100])，32是batch，label为torch.Size([32, 1])
+        img0, img1, label = img0.to(DEVICE), img1.to(DEVICE), label.to(DEVICE)  # 数据移至GPU
         optimizer.zero_grad()
         output1, output2 = net(img0, img1)
         loss_contrastive = criterion(output1, output2, label)
