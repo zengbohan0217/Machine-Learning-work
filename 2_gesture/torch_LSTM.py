@@ -9,19 +9,20 @@ from torch.utils.data import DataLoader, Dataset
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 BATCH_SIZE = 64
+train_num = 20
 
 class LSTM(nn.Module):
     def __init__(self, batch_size):
-        super.__init__()
+        super().__init__()
         self.lstm = nn.LSTM(2, 8)
         self.batch_size = batch_size
 
-    def forword(self, x):
+    def forward(self, x):
         # x的size是[3, batch_size, 2]，其中2分别代表speed angle
         hidden = (torch.randn(1, self.batch_size, 8),
                   torch.randn(1, self.batch_size, 8))
-        out, h0, c0 = self.lstm(x, hidden)
-        return h0
+        out, h0 = self.lstm(x, hidden)
+        return h0[0]
 
 def get_dataset():
     dataset_list = []              # size:n*3*2
@@ -44,10 +45,43 @@ def get_dataset():
     random.shuffle(dataset_list)
     return dataset_list
 
-def train(model, train_data_set):
-
+def train(model, optimizer, train_data_set):
     model.train()
+    for epoch in range(0, train_num):
+        point = 0
+        loss_sum = 0
+        while point + BATCH_SIZE <= len(train_data_set):
+            part_data = train_data_set[point:point+BATCH_SIZE]
+            input_data_1 = []
+            input_data_2 = []
+            input_data_3 = []
+            input_label = []
+            for data, label in part_data:
+                input_label.append(label)
+                input_data_1.append(data[0])
+                input_data_2.append(data[1])
+                input_data_3.append(data[2])
+            input_data = [input_data_1, input_data_2, input_data_3]
+            input_data = torch.Tensor(input_data)
+            input_label = torch.Tensor(input_label)
+            optimizer.zero_grad()
+            out_put = model(input_data)
+            #print(out_put[0].view(512))
+            #print(input_label)
+            labels_ = torch.max(input_label, 1)[1]
+            #criteria = nn.CrossEntropyLoss()
+            #loss = criteria(out_put[0], labels_)
+            loss = F.nll_loss(out_put[0], labels_)
+            loss_sum += loss.item()
+            loss.backward()
+            optimizer.step()
+            point = point + BATCH_SIZE
+        print("epoch {} finish loss is {}".format(epoch, loss_sum))
 
 def test(model, test_data_set):
     model.test()
 
+model = LSTM(BATCH_SIZE)
+optimizer = optim.Adam(model.parameters(), lr=0.005)
+train_data = get_dataset()
+train(model, optimizer, train_data)
