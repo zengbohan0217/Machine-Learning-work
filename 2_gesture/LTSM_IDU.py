@@ -25,125 +25,23 @@ def get_model():
 def get_dataset():
     data_list = []
     label_list = []
-    with open('./data_set/1.json', 'r', encoding='utf8') as fp:
-        json_data = json.load(fp)
-        speed_list = []
-        angel_list = []
-        for need_key in json_data.keys():
-            speed_list.extend(json_data[need_key]["speed_accel"])
-            angel_list.extend(json_data[need_key]["angle_accel"])
-        for i in range(len(speed_list)):
-            data_part = []
-            for j in range(3):
-                data_part.append([speed_list[i][j], angel_list[i][j]])
-            data_list.append(data_part[:])
-            label_list.append([1, 0, 0, 0, 0, 0, 0, 0])
-            #label_list.append(1)
-            #for j in range(3):
-            #    data_list.append([speed_list[i][j], angel_list[i][j]])
-            #    label_list.append([1, 0, 0, 0, 0, 0, 0, 0])
-        #ds = tf.data.Dataset.from_tensor_slices((data_list, label_list))
-        #ds = ds.batch(BATCH_SIZE)
-
-    with open('./data_set/2.json', 'r', encoding='utf8') as fp:
-        json_data = json.load(fp)
-        speed_list = []
-        angel_list = []
-        for need_key in json_data.keys():
-            speed_list.extend(json_data[need_key]["speed_accel"])
-            angel_list.extend(json_data[need_key]["angle_accel"])
-        for i in range(len(speed_list)):
-            data_part = []
-            for j in range(3):
-                data_part.append([speed_list[i][j], angel_list[i][j]])
-            data_list.append(data_part[:])
-            label_list.append([0, 1, 0, 0, 0, 0, 0, 0])
-            #label_list.append(2)
-
-    with open('./data_set/3.json', 'r', encoding='utf8') as fp:
-        json_data = json.load(fp)
-        speed_list = []
-        angel_list = []
-        for need_key in json_data.keys():
-            speed_list.extend(json_data[need_key]["speed_accel"])
-            angel_list.extend(json_data[need_key]["angle_accel"])
-        for i in range(len(speed_list)):
-            data_part = []
-            for j in range(3):
-                data_part.append([speed_list[i][j], angel_list[i][j]])
-            data_list.append(data_part[:])
-            label_list.append([0, 0, 1, 0, 0, 0, 0, 0])
-            #label_list.append(3)
-
-    with open('./data_set/4.json', 'r', encoding='utf8') as fp:
-        json_data = json.load(fp)
-        speed_list = []
-        angel_list = []
-        for need_key in json_data.keys():
-            speed_list.extend(json_data[need_key]["speed_accel"])
-            angel_list.extend(json_data[need_key]["angle_accel"])
-        for i in range(len(speed_list)):
-            data_part = []
-            for j in range(3):
-                data_part.append([speed_list[i][j], angel_list[i][j]])
-            data_list.append(data_part[:])
-            label_list.append([0, 0, 0, 1, 0, 0, 0, 0])
-
-    with open('./data_set/A.json', 'r', encoding='utf8') as fp:
-        json_data = json.load(fp)
-        speed_list = []
-        angel_list = []
-        for need_key in json_data.keys():
-            speed_list.extend(json_data[need_key]["speed_accel"])
-            angel_list.extend(json_data[need_key]["angle_accel"])
-        for i in range(len(speed_list)):
-            data_part = []
-            for j in range(3):
-                data_part.append([speed_list[i][j], angel_list[i][j]])
-            data_list.append(data_part[:])
-            label_list.append([0, 0, 0, 0, 1, 0, 0, 0])
-
-    with open('./data_set/B.json', 'r', encoding='utf8') as fp:
-        json_data = json.load(fp)
-        speed_list = []
-        angel_list = []
-        for need_key in json_data.keys():
-            speed_list.extend(json_data[need_key]["speed_accel"])
-            angel_list.extend(json_data[need_key]["angle_accel"])
-        for i in range(len(speed_list)):
-            data_part = []
-            for j in range(3):
-                data_part.append([speed_list[i][j], angel_list[i][j]])
-            data_list.append(data_part[:])
-            label_list.append([0, 0, 0, 0, 0, 1, 0, 0])
-
-    with open('./data_set/C.json', 'r', encoding='utf8') as fp:
-        json_data = json.load(fp)
-        speed_list = []
-        angel_list = []
-        for need_key in json_data.keys():
-            speed_list.extend(json_data[need_key]["speed_accel"])
-            angel_list.extend(json_data[need_key]["angle_accel"])
-        for i in range(len(speed_list)):
-            data_part = []
-            for j in range(3):
-                data_part.append([speed_list[i][j], angel_list[i][j]])
-            data_list.append(data_part[:])
-            label_list.append([0, 0, 0, 0, 0, 0, 1, 0])
-
-    with open('./data_set/D.json', 'r', encoding='utf8') as fp:
-        json_data = json.load(fp)
-        speed_list = []
-        angel_list = []
-        for need_key in json_data.keys():
-            speed_list.extend(json_data[need_key]["speed_accel"])
-            angel_list.extend(json_data[need_key]["angle_accel"])
-        for i in range(len(speed_list)):
-            data_part = []
-            for j in range(3):
-                data_part.append([speed_list[i][j], angel_list[i][j]])
-            data_list.append(data_part[:])
-            label_list.append([0, 0, 0, 0, 0, 0, 0, 1])
+    character_dict = ["1", "2", "3", "4", "A", "B", "C", "D"]
+    for k in range(8):
+        with open('./data_set/{}.json'.format(character_dict[k]), 'r', encoding="UTF-8") as fp:
+            json_data = json.load(fp)
+            speed_list = []
+            angel_list = []
+            for need_key in json_data.keys():
+                speed_list.extend(json_data[need_key]["speed_accel"])
+                angel_list.extend(json_data[need_key]["angle_accel"])
+            for i in range(len(speed_list)):
+                data_part = []
+                label_part = [0]*8
+                for j in range(3):
+                    data_part.append([speed_list[i][j], angel_list[i][j]])
+                data_list.append(data_part[:])
+                label_part[k] = 1
+                label_list.append(label_part[:])
 
     ds = tf.data.Dataset.from_tensor_slices((data_list, label_list))
     ds = ds.shuffle(10000000,reshuffle_each_iteration=True)
