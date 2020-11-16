@@ -9,20 +9,26 @@ from torch.utils.data import DataLoader, Dataset
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 BATCH_SIZE = 64
-train_num = 10
+train_num = 15
 
 class LSTM(nn.Module):
     def __init__(self, batch_size):
         super().__init__()
-        self.lstm = nn.LSTM(2, 8)
+        self.lstm = nn.LSTM(2, 20)
+        self.link1 = nn.Linear(20, 10)
+        self.link2 = nn.Linear(10, 8)
         self.batch_size = batch_size
 
     def forward(self, x):
         # x的size是[3, batch_size, 2]，其中2分别代表speed angle
-        hidden = (torch.randn(1, self.batch_size, 8),
-                  torch.randn(1, self.batch_size, 8))
+        hidden = (torch.randn(1, self.batch_size, 20),
+                  torch.randn(1, self.batch_size, 20))
         out, h0 = self.lstm(x, hidden)
-        return h0[0]
+        out_put = self.link1(h0[0])
+        out_put = F.relu(out_put)
+        out_put = self.link2(out_put)
+        out_put = F.relu(out_put)
+        return out_put
 
 def get_dataset():
     dataset_list = []              # size:n*3*2
@@ -72,7 +78,8 @@ def train(model, optimizer, train_data_set):
             #criteria = nn.CrossEntropyLoss()
             #loss = criteria(out_put[0], labels_)
             loss = F.nll_loss(out_put[0], labels_)
-            loss_sum += loss.item()
+            #loss = F.nll_loss(out_put, labels_)
+            loss_sum = loss.item()
             loss.backward()
             optimizer.step()
             point = point + BATCH_SIZE
@@ -84,6 +91,7 @@ def test(model, test_data_set):
     correct = 0
     with torch.no_grad():
         point = 0
+        len_with_batch = 0
         while point + BATCH_SIZE <= len(test_data_set):
             part_data = test_data_set[point:point+BATCH_SIZE]
             input_data_1 = []
@@ -102,8 +110,10 @@ def test(model, test_data_set):
             labels_ = torch.max(input_label, 1)[1]
             #test_loss += F.nll_loss(out_put[0], target, reduction='sum')
             pred = out_put[0].max(1, keepdim=True)[1]
+            #pred = out_put.max(1, keepdim=True)[1]
             correct += pred.eq(labels_.view_as(pred)).sum().item()
             point += BATCH_SIZE
+            len_with_batch += 1
 
     #test_loss /= len(test_data_set)
     print("\nTest set Accuracy: {:.2f}%".format(100.*correct/len(test_data_set)))
