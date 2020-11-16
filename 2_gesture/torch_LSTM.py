@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader, Dataset
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 BATCH_SIZE = 64
-train_num = 20
+train_num = 10
 
 class LSTM(nn.Module):
     def __init__(self, batch_size):
@@ -79,9 +79,37 @@ def train(model, optimizer, train_data_set):
         print("epoch {} finish loss is {}".format(epoch, loss_sum))
 
 def test(model, test_data_set):
-    model.test()
+    model.eval()
+    test_loss = 0
+    correct = 0
+    with torch.no_grad():
+        point = 0
+        while point + BATCH_SIZE <= len(test_data_set):
+            part_data = test_data_set[point:point+BATCH_SIZE]
+            input_data_1 = []
+            input_data_2 = []
+            input_data_3 = []
+            input_label = []
+            for data, label in part_data:
+                input_label.append(label)
+                input_data_1.append(data[0])
+                input_data_2.append(data[1])
+                input_data_3.append(data[2])
+            input_data = [input_data_1, input_data_2, input_data_3]
+            input_data = torch.Tensor(input_data)
+            input_label = torch.Tensor(input_label)
+            out_put = model(input_data)
+            labels_ = torch.max(input_label, 1)[1]
+            #test_loss += F.nll_loss(out_put[0], target, reduction='sum')
+            pred = out_put[0].max(1, keepdim=True)[1]
+            correct += pred.eq(labels_.view_as(pred)).sum().item()
+            point += BATCH_SIZE
+
+    #test_loss /= len(test_data_set)
+    print("\nTest set Accuracy: {:.2f}%".format(100.*correct/len(test_data_set)))
 
 model = LSTM(BATCH_SIZE)
 optimizer = optim.Adam(model.parameters(), lr=0.005)
 train_data = get_dataset()
 train(model, optimizer, train_data)
+test(model, test_data_set=train_data)
