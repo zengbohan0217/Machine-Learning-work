@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader, Dataset
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 BATCH_SIZE = 64
-train_num = 15
+train_num = 5
 
 class LSTM(nn.Module):
     def __init__(self, batch_size):
@@ -75,9 +75,9 @@ def train(model, optimizer, train_data_set):
             #print(out_put[0].view(512))
             #print(input_label)
             labels_ = torch.max(input_label, 1)[1]
-            #criteria = nn.CrossEntropyLoss()
-            #loss = criteria(out_put[0], labels_)
-            loss = F.nll_loss(out_put[0], labels_)
+            criteria = nn.CrossEntropyLoss()
+            loss = criteria(out_put[0], labels_)
+            #loss = F.nll_loss(out_put[0], labels_)
             #loss = F.nll_loss(out_put, labels_)
             loss_sum = loss.item()
             loss.backward()
