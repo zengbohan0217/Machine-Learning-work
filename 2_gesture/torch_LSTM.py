@@ -8,25 +8,28 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader, Dataset
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-BATCH_SIZE = 64
-train_num = 5
+BATCH_SIZE = 32
+train_num = 30
 
 class LSTM(nn.Module):
     def __init__(self, batch_size):
         super().__init__()
-        self.lstm = nn.LSTM(2, 20)
-        self.link1 = nn.Linear(20, 10)
-        self.link2 = nn.Linear(10, 8)
+        self.lstm = nn.LSTM(2, 100)
+        self.link1 = nn.Linear(100, 50)
+        self.link2 = nn.Linear(50, 10)
+        self.link3 = nn.Linear(10, 8)
         self.batch_size = batch_size
 
     def forward(self, x):
         # x的size是[3, batch_size, 2]，其中2分别代表speed angle
-        hidden = (torch.randn(1, self.batch_size, 20),
-                  torch.randn(1, self.batch_size, 20))
+        hidden = (torch.randn(1, self.batch_size, 100),
+                  torch.randn(1, self.batch_size, 100))
         out, h0 = self.lstm(x, hidden)
         out_put = self.link1(h0[0])
         out_put = F.relu(out_put)
         out_put = self.link2(out_put)
+        out_put = F.relu(out_put)
+        out_put = self.link3(out_put)
         out_put = F.relu(out_put)
         return out_put
 
