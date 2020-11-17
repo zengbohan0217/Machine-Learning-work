@@ -16,11 +16,10 @@ for k in range(8):
             angel_list.extend(json_data[need_key]["angle_accel"])
         for i in range(len(speed_list)):
             data_part = []
-            label_part = [0] * 8
             for j in range(3):
                 data_part.append(speed_list[i][j])
                 data_part.append(speed_list[i][j])
-            label_part[k] = 1
+            label_part = k
             dataset_list.append((data_part, label_part))
 random.shuffle(dataset_list)
 json_dict = {}
