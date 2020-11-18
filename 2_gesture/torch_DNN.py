@@ -8,7 +8,7 @@ import random
 import json
 
 BATCH_SIZE = 64
-EPOCH = 20
+EPOCH = 100
 
 def get_dataset():
     dataset_list = []  # size:n*6
@@ -36,9 +36,9 @@ def get_dataset():
 class DNN(nn.Module):
     def __init__(self):
         super().__init__()
-        self.link1 = nn.Linear(6, 200)
-        self.link2 = nn.Linear(200, 100)
-        self.link3 = nn.Linear(100, 50)
+        self.link1 = nn.Linear(6, 300)
+        self.link2 = nn.Linear(300, 200)
+        self.link3 = nn.Linear(200, 50)
         self.link4 = nn.Linear(50, 8)
 
     def forward(self, x):
@@ -125,7 +125,6 @@ def train_with_dataloader(model, optimizer, trainloader, epoch):
     for batch_idx, (data, target) in enumerate(trainloader):
         optimizer.zero_grad()
         output = model(data)
-        #loss = F.nll_loss(output, target)
         criteria = nn.CrossEntropyLoss()
         loss = criteria(output, target)
         loss.backward()
@@ -156,13 +155,14 @@ def test_with_dataloader(model, testloader):
 
 
 model = DNN()
-optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
+#optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
+optimizer = optim.Adam(model.parameters(), lr=0.0005)
 #train_data_set = get_dataset()
 json_path = "./data_set/deal.json"
-train_data = dataset(json_path=json_path, start=0, length=20000)
-train_loader = DataLoader(dataset=train_data, batch_size=32, shuffle=True)
-test_data = dataset(json_path=json_path, start=20000, length=10000)
-test_loader = DataLoader(dataset=train_data, batch_size=16, shuffle=True)
+train_data = dataset(json_path=json_path, start=0, length=30000)
+train_loader = DataLoader(dataset=train_data, batch_size=64, shuffle=True)
+test_data = dataset(json_path=json_path, start=30000, length=10000)
+test_loader = DataLoader(dataset=test_data, batch_size=32, shuffle=True)
 for epoch in range(0, EPOCH):
     #train(model, optimizer, train_data_set, epoch)
     #test(model, train_data_set, epoch)
