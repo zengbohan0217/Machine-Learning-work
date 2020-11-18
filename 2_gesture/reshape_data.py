@@ -2,7 +2,7 @@ import json
 import random
 
 def wasted_treat():
-    json_out_path = "./data_set/deal.json"
+    json_out_path = "data_set/data_for_DNN.json"
     dataset_list = []  # size:n*6
     character_dict = ["1", "2", "3", "4", "A", "B", "C", "D"]
 
@@ -61,7 +61,7 @@ def true_treat_data(json_path):
         json.dump(json_dict, fp)
 
 
-with open("./data_set/deal.json", 'r', encoding="UTF-8") as fp:
+with open("data_set/data_for_DNN.json", 'r', encoding="UTF-8") as fp:
     json_data = json.load(fp)
 
 for key, value in json_data.items():

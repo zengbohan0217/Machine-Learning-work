@@ -97,7 +97,7 @@ def test_with_dataloader(model, testloader):
 model = DNN()
 #optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
 optimizer = optim.Adam(model.parameters(), lr=0.0005)
-json_path = "./data_set/deal.json"       # 1120条
+json_path = "data_set/data_for_DNN.json"  # 1120条
 train_data = dataset(json_path=json_path, start=0, length=700)
 train_loader = DataLoader(dataset=train_data, batch_size=16, shuffle=True)
 test_data = dataset(json_path=json_path, start=700, length=300)
