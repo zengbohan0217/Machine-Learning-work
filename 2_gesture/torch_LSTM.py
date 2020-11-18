@@ -8,20 +8,20 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader, Dataset
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-BATCH_SIZE = 32
+BATCH_SIZE = 1
 train_num = 30
 
 class LSTM(nn.Module):
     def __init__(self, batch_size):
         super().__init__()
-        self.lstm = nn.LSTM(2, 100)
+        self.lstm = nn.LSTM(6, 100)
         self.link1 = nn.Linear(100, 50)
         self.link2 = nn.Linear(50, 10)
         self.link3 = nn.Linear(10, 8)
         self.batch_size = batch_size
 
     def forward(self, x):
-        # x的size是[3, batch_size, 2]，其中2分别代表speed angle
+        # x的size是[sequence_len, 1, 6]，其中6分别代表speed angle
         hidden = (torch.randn(1, self.batch_size, 100),
                   torch.randn(1, self.batch_size, 100))
         out, h0 = self.lstm(x, hidden)
@@ -121,8 +121,53 @@ def test(model, test_data_set):
     #test_loss /= len(test_data_set)
     print("\nTest set Accuracy: {:.2f}%".format(100.*correct/len(test_data_set)))
 
+def new_get_dataset(start, length):
+    with open("./data_set/data_for_LSTM.json", 'r', encoding="UTF-8") as fp:
+        loader = json.load(fp)
+    data_list = []
+    for i in range(length):
+        key = i + start
+        key = str(key)
+        data = loader[key]["data"]
+        label = loader[key]["label"]
+        data_list.append((data, label))
+    return data_list
+
+def new_train(model, optimizer, epoch, train_data):
+    model.train()
+    for data, label in train_data:
+        input_data = torch.Tensor(data)
+        label = [label]
+        input_label = torch.LongTensor(label)
+        optimizer.zero_grad()
+        output = model(input_data)
+        criteria = nn.CrossEntropyLoss()
+        loss = criteria(output[0], input_label)
+        loss.backward()
+        optimizer.step()
+        #print("finish a train")
+    print("epoch {} finish loss is {}".format(epoch, loss.item()))
+
+def new_test(model, epoch, test_data):
+    model.eval()
+    correct = 0
+    with torch.no_grad():
+        for data, label in test_data:
+            input_data = torch.Tensor(data)
+            label = [label]
+            input_label = torch.LongTensor(label)
+            out_put = model(input_data)
+            pred = out_put[0].max(1, keepdim=True)[1]
+            correct += pred.eq(input_label.view_as(pred)).sum().item()
+    print("Test set Accuracy: {:.2f}%\n".format(100. * correct / len(test_data)))
+
 model = LSTM(BATCH_SIZE)
 optimizer = optim.Adam(model.parameters(), lr=0.005)
-train_data = get_dataset()
-train(model, optimizer, train_data)
-test(model, test_data_set=train_data)
+train_data = new_get_dataset(0, 400)
+test_data = new_get_dataset(400, 300)
+#train_data = get_dataset()
+#train(model, optimizer, train_data)
+#test(model, test_data_set=train_data)
+for epoch in range(0, train_num):
+    new_train(model, optimizer, epoch, train_data)
+    new_test(model, epoch, test_data)
