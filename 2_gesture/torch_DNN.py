@@ -49,7 +49,7 @@ class DNN(nn.Module):
         out = self.link3(out)
         out = F.relu(out)
         out = self.link4(out)
-        out = F.relu(out)
+        out = F.softmax(out, dim=-1)
         return out
 
 class dataset(Dataset):
