@@ -61,6 +61,10 @@ def true_treat_data(json_path):
         json.dump(json_dict, fp)
 
 
-#json_path = "./data_set/deal.json"
-#true_treat_data(json_path)
+with open("./data_set/deal.json", 'r', encoding="UTF-8") as fp:
+    json_data = json.load(fp)
 
+for key, value in json_data.items():
+    if len(value["data"])<1200:
+        print(key)
+        print(len(value["data"]))
