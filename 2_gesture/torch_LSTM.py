@@ -14,7 +14,7 @@ train_num = 30
 class LSTM(nn.Module):
     def __init__(self, batch_size):
         super().__init__()
-        self.lstm = nn.LSTM(6, 100)
+        self.lstm = nn.LSTM(6, 8)
         self.link1 = nn.Linear(100, 50)
         self.link2 = nn.Linear(50, 10)
         self.link3 = nn.Linear(10, 8)
@@ -22,15 +22,15 @@ class LSTM(nn.Module):
 
     def forward(self, x):
         # x的size是[sequence_len, 1, 6]，其中6分别代表speed angle
-        hidden = (torch.randn(1, self.batch_size, 100),
-                  torch.randn(1, self.batch_size, 100))
+        hidden = (torch.randn(1, self.batch_size, 8),
+                  torch.randn(1, self.batch_size, 8))
         out, h0 = self.lstm(x, hidden)
-        out_put = self.link1(h0[0])
-        out_put = F.relu(out_put)
-        out_put = self.link2(out_put)
-        out_put = F.relu(out_put)
-        out_put = self.link3(out_put)
-        out_put = F.relu(out_put)
+        #out_put = self.link1(h0[0])
+        #out_put = F.relu(out_put)
+        #out_put = self.link2(out_put)
+        #out_put = F.relu(out_put)
+        #out_put = self.link3(out_put)
+        out_put = F.softmax(h0[1], dim=-1)
         return out_put
 
 def get_dataset():
@@ -141,8 +141,9 @@ def new_train(model, optimizer, epoch, train_data):
         input_label = torch.LongTensor(label)
         optimizer.zero_grad()
         output = model(input_data)
-        criteria = nn.CrossEntropyLoss()
-        loss = criteria(output[0], input_label)
+        #criteria = nn.CrossEntropyLoss()
+        #loss = criteria(output[0], input_label)
+        loss = F.nll_loss(output[0], input_label)
         loss.backward()
         optimizer.step()
         #print("finish a train")
@@ -163,11 +164,8 @@ def new_test(model, epoch, test_data):
 
 model = LSTM(BATCH_SIZE)
 optimizer = optim.Adam(model.parameters(), lr=0.005)
-train_data = new_get_dataset(0, 400)
-test_data = new_get_dataset(400, 300)
-#train_data = get_dataset()
-#train(model, optimizer, train_data)
-#test(model, test_data_set=train_data)
+train_data = new_get_dataset(0, 700)
+test_data = new_get_dataset(700, 100)
 for epoch in range(0, train_num):
     new_train(model, optimizer, epoch, train_data)
     new_test(model, epoch, test_data)
