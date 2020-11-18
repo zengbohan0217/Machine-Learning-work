@@ -78,8 +78,9 @@ def treat_data_for_lstm(json_path, group_size):
                     if point + i < len(speed_list):
                         mid_list.extend(speed_list[point+i])
                         mid_list.extend(angel_list[point+i])
-                mid_list = [mid_list]
-                key_list.append(mid_list)         # sequence_len * 1 * 6
+                if len(mid_list) == group_size*6:
+                    mid_list = [mid_list]
+                    key_list.append(mid_list)         # sequence_len * 1 * (groupsize*6)
                 point += group_size
             dataset_dict = {}
             dataset_dict["data"] = key_list
@@ -93,6 +94,6 @@ def treat_data_for_lstm(json_path, group_size):
     with open(json_path, 'w', encoding="UTF-8") as fp:
         json.dump(json_dict, fp)
 
-#json_path = "./data_set/data_for_LSTM.json"
-#treat_data_for_lstm(json_path, 2)
+json_path = "./data_set/data_for_LSTM.json"
+treat_data_for_lstm(json_path, 2)
 

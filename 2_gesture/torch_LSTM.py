@@ -14,7 +14,7 @@ train_num = 30
 class LSTM(nn.Module):
     def __init__(self, batch_size):
         super().__init__()
-        self.lstm = nn.LSTM(6, 8)
+        self.lstm = nn.LSTM(12, 8)
         self.link1 = nn.Linear(100, 50)
         self.link2 = nn.Linear(50, 10)
         self.link3 = nn.Linear(10, 8)
