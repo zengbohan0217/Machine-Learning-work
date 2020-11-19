@@ -9,12 +9,12 @@ from torch.utils.data import DataLoader, Dataset
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 BATCH_SIZE = 1
-train_num = 30
+train_num = 50
 
 class LSTM(nn.Module):
     def __init__(self, batch_size):
         super().__init__()
-        self.lstm = nn.LSTM(12, 8)
+        self.lstm = nn.LSTM(30, 8)
         self.link1 = nn.Linear(100, 50)
         self.link2 = nn.Linear(50, 10)
         self.link3 = nn.Linear(10, 8)
@@ -30,7 +30,7 @@ class LSTM(nn.Module):
         #out_put = self.link2(out_put)
         #out_put = F.relu(out_put)
         #out_put = self.link3(out_put)
-        out_put = F.softmax(h0[1], dim=-1)
+        out_put = F.softmax(h0[0], dim=-1)
         return out_put
 
 def get_dataset():
@@ -141,9 +141,10 @@ def new_train(model, optimizer, epoch, train_data):
         input_label = torch.LongTensor(label)
         optimizer.zero_grad()
         output = model(input_data)
-        #criteria = nn.CrossEntropyLoss()
-        #loss = criteria(output[0], input_label)
-        loss = F.nll_loss(output[0], input_label)
+        #criteria = nn.MSELoss()
+        criteria = nn.CrossEntropyLoss()
+        loss = criteria(output[0], input_label)
+        #loss = F.nll_loss(output[0], input_label)
         loss.backward()
         optimizer.step()
         #print("finish a train")
@@ -163,9 +164,10 @@ def new_test(model, epoch, test_data):
     print("Test set Accuracy: {:.2f}%\n".format(100. * correct / len(test_data)))
 
 model = LSTM(BATCH_SIZE)
-optimizer = optim.Adam(model.parameters(), lr=0.005)
+#optimizer = optim.Adam(model.parameters(), lr=0.0005)
+optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
 train_data = new_get_dataset(0, 700)
-test_data = new_get_dataset(700, 100)
+test_data = new_get_dataset(700, 300)
 for epoch in range(0, train_num):
     new_train(model, optimizer, epoch, train_data)
     new_test(model, epoch, test_data)

@@ -94,6 +94,6 @@ def treat_data_for_lstm(json_path, group_size):
     with open(json_path, 'w', encoding="UTF-8") as fp:
         json.dump(json_dict, fp)
 
-json_path = "./data_set/data_for_LSTM.json"
-treat_data_for_lstm(json_path, 2)
+#json_path = "./data_set/data_for_LSTM.json"
+#treat_data_for_lstm(json_path, 5)
 
