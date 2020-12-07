@@ -39,10 +39,6 @@ class dataset(Dataset):
 
     def __getitem__(self, i):
         key = self.start + i
-        if key == 67:
-            key = 66
-        elif key == 627:
-            key = 626
         key = str(key)
         data = self.data_load[key]["data"]
         data = np.array(data)
