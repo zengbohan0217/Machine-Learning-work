@@ -46,6 +46,8 @@ def true_treat_data(json_path):
                 mid_list = speed_list[i]
                 mid_list.extend(angel_list[i])
                 key_list.append(mid_list)
+            while len(key_list) < 200:
+                key_list.append(mid_list)
             key_list = key_list[0:200]
             key_list = sum(key_list, [])
             dataset_dict = {}
@@ -96,4 +98,5 @@ def treat_data_for_lstm(json_path, group_size):
 
 #json_path = "./data_set/data_for_LSTM.json"
 #treat_data_for_lstm(json_path, 5)
-
+json_path_DNN = "./data_set/data_for_DNN.json"
+true_treat_data(json_path_DNN)
