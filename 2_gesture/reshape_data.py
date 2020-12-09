@@ -96,7 +96,7 @@ def treat_data_for_lstm(json_path, group_size):
     with open(json_path, 'w', encoding="UTF-8") as fp:
         json.dump(json_dict, fp)
 
-#json_path = "./data_set/data_for_LSTM.json"
-#treat_data_for_lstm(json_path, 5)
-json_path_DNN = "./data_set/data_for_DNN.json"
-true_treat_data(json_path_DNN)
+# json_path = "./data_set/data_for_LSTM.json"
+# treat_data_for_lstm(json_path, 5)
+# json_path_DNN = "./data_set/data_for_DNN.json"
+# true_treat_data(json_path_DNN)
