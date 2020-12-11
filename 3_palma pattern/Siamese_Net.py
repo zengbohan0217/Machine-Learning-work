@@ -73,12 +73,15 @@ def test(model, device, test_loader):
             img0, img1, label = data
             img0, img1, label = img0.to(device), img1.to(device), label.to(device)
             output1, output2 = model(img0, img1)
+            output1, output2 = output1.to(device), output2.to(device)
             euclidean_distance = F.pairwise_distance(output1, output2, keepdim=True)
             euclidean_distance = torch.mean(euclidean_distance).item()
+            # euclidean_distance = euclidean_distance.to(device)
             if euclidean_distance < 0.0001:
                 eval_judge = torch.tensor([1])
             else:
                 eval_judge = torch.tensor([0])
+            eval_judge = eval_judge.to(device)
             correct += eval_judge.eq(label.view_as(torch.tensor(eval_judge))).sum().item()
     return correct/len(test_loader)
 
