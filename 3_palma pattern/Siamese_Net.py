@@ -86,7 +86,7 @@ def test(model, device, test_loader):
             euclidean_distance = F.pairwise_distance(output1, output2, keepdim=True)
             euclidean_distance = torch.mean(euclidean_distance).item()
             # euclidean_distance = euclidean_distance.to(device)
-            if euclidean_distance < 1:
+            if euclidean_distance < 0.5:
                 eval_judge = torch.tensor([1])
             else:
                 eval_judge = torch.tensor([0])

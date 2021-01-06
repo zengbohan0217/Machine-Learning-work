@@ -12,6 +12,7 @@ def draw_print(input_path, input_enemy, target):
     y_e = np.arange(0, 20, 1)
     X_e, Y_e = np.meshgrid(x_e, y_e)
     Z_e = X_e**2 + Y_e**2
+    plt.figure(figsize=(10, 10))
     plt.contour(X_e, Y_e, Ematrix(input_enemy))
     plt.plot(x, y, color='r', marker='o', linestyle='dashed')
     plt.scatter(target[0], target[1], marker='x')
