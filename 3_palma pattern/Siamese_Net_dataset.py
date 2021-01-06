@@ -46,9 +46,11 @@ class SN_dataset(Dataset):
         if i >= (self.length // 3) * 2:
             image_name_1 = group_name_1 + '_' + in_name_1 + '.bmp'
             image_path_1 = os.path.join(self.image_dir, image_name_1)
+            image_name_2 = group_name_1 + '_' + in_name_2 + '.bmp'
+            image_path_2 = os.path.join(self.image_dir, image_name_2)
             img_1 = self.load_data(image_path_1, self.resize_height,
                                    self.resize_width, normalization=False)
-            img_2 = self.load_data(image_path_1, self.resize_height,
+            img_2 = self.load_data(image_path_2, self.resize_height,
                                    self.resize_width, normalization=False)
             img_1 = self.data_preproccess(img_1)
             img_2 = self.data_preproccess(img_2)

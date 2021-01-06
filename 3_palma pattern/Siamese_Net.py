@@ -59,8 +59,10 @@ class ContrastiveLoss(torch.nn.Module):
 
     def forward(self, output1, output2, label):
         euclidean_distance = F.pairwise_distance(output1, output2, keepdim = True)
-        loss_contrastive = torch.mean((1-label) * torch.pow(euclidean_distance, 2) +
-                                      (label) * torch.pow(torch.clamp(self.margin - euclidean_distance, min=0.0), 2))
+        # loss_contrastive = torch.mean((1-label) * torch.pow(euclidean_distance, 2) +
+        #                               (label) * torch.pow(torch.clamp(self.margin - euclidean_distance, min=0.0), 2))
+        loss_contrastive = torch.mean((label) * torch.pow(euclidean_distance, 2) +
+                                      (1 - label) * torch.pow(torch.clamp(self.margin - euclidean_distance, min=0.0), 2))
 
         return loss_contrastive
 
@@ -77,7 +79,7 @@ def test(model, device, test_loader):
             euclidean_distance = F.pairwise_distance(output1, output2, keepdim=True)
             euclidean_distance = torch.mean(euclidean_distance).item()
             # euclidean_distance = euclidean_distance.to(device)
-            if euclidean_distance < 0.0001:
+            if euclidean_distance < 1:
                 eval_judge = torch.tensor([1])
             else:
                 eval_judge = torch.tensor([0])
@@ -98,7 +100,7 @@ train_number_epochs = 20
 train_image_dir = '.\BMP600'
 train_data = SN_data.SN_dataset(image_dir=train_image_dir, repeat=1, length=3200)
 train_loader = DataLoader(dataset=train_data, batch_size=40, shuffle=True)
-test_data = SN_data.SN_dataset(image_dir=train_image_dir, repeat=1, length=3200)
+test_data = SN_data.SN_dataset(image_dir=train_image_dir, repeat=1, length=1600)
 test_loader = DataLoader(dataset=test_data, batch_size=1, shuffle=True)
 
 #开始训练
