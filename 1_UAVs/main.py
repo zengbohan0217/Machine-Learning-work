@@ -14,8 +14,9 @@ for i in range(20):
     for j in range(20):
         for k in range(20):
             for z in range(20):
-                map[i*10+j][k*10+z] = get_dis.eucliDist_m([i,j], [k,z])
-                map[k*10+z][i*10+j] = get_dis.eucliDist_m([i,j], [k,z])
+                map[i*20+j][k*20+z] = get_dis.eucliDist_m([i,j], [k,z])
+                map[k*20+z][i*20+j] = get_dis.eucliDist_m([i,j], [k,z])
+# print(map)
 
 plan_list = planning.plan(test_inital_pos, map, test_target)
 print(plan_list)

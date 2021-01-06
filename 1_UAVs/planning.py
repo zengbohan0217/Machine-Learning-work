@@ -34,7 +34,7 @@ def plan(inital_pos, input_map, target):                         # inital_pos与
                 enemyUK.remove(enemy)
         print('get new enemy')
         print(new_enemy_list)
-
+    print(uav.map)
     return path_record
                                                                  # 此函数获取最终路线
 
