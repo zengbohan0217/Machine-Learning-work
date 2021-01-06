@@ -18,9 +18,12 @@ class SiameseNetwork(nn.Module):
         # 1*1*28*28
         self.conv1 = nn.Conv2d(3, 10, 5)
         self.conv2 = nn.Conv2d(10, 20, 3)
-        self.fc0 = nn.Linear(3380, 500)
+        # self.fc0 = nn.Linear(3380, 500)
+        self.fc0 = nn.Sequential(nn.Linear(3380, 500), nn.Dropout(p=0.5))
+        # self.fc1 = nn.Linear(20 * 10 * 10, 500)
         self.fc1 = nn.Linear(20 * 10 * 10, 500)
-        self.fc2 = nn.Linear(500, 20)
+        # self.fc2 = nn.Linear(500, 20)
+        self.fc2 = nn.Sequential(nn.Linear(500, 20), nn.Dropout(p=0.5))
 
     def forward_once(self, x):
         in_size = x.size(0)
