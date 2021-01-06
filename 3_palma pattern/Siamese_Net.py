@@ -18,29 +18,33 @@ class SiameseNetwork(nn.Module):
         # 1*1*28*28
         self.conv1 = nn.Conv2d(3, 10, 5)
         self.conv2 = nn.Conv2d(10, 20, 3)
-        # self.fc0 = nn.Linear(3380, 500)
-        self.fc0 = nn.Sequential(nn.Linear(3380, 500), nn.Dropout(p=0.5))
+        self.conv3 = nn.Conv2d(20, 30, 3)
+        # self.fc0 = nn.Linear(1210, 500)
+        self.fc0 = nn.Sequential(nn.Linear(3630, 1000), nn.Dropout(p=0.5))
         # self.fc1 = nn.Linear(20 * 10 * 10, 500)
-        self.fc1 = nn.Linear(20 * 10 * 10, 500)
+        self.fc1 = nn.Sequential(nn.Linear(1000, 500), nn.Dropout(p=0.5))
         # self.fc2 = nn.Linear(500, 20)
-        self.fc2 = nn.Sequential(nn.Linear(500, 20), nn.Dropout(p=0.5))
+        self.fc2 = nn.Sequential(nn.Linear(500, 40), nn.Dropout(p=0.5))
 
     def forward_once(self, x):
         in_size = x.size(0)
-        out = self.conv1(x)  # 1* 10 * 24 *24
+        out = self.conv1(x)
         out = F.relu(out)
-        out = F.max_pool2d(out, 2, 2)  # 1* 10 * 12 * 12
         out = F.max_pool2d(out, 2, 2)
         out = F.max_pool2d(out, 2, 2)
         out = F.max_pool2d(out, 2, 2)
-        out = self.conv2(out)  # 1* 20 * 10 * 10
+        out = F.max_pool2d(out, 2, 2)
+        out = self.conv2(out)
         out = F.relu(out)
-        out = out.view(in_size, -1)  # 1 * 2000
+        out = self.conv3(out)     # bad change
+        out = F.relu(out)
+        out = out.view(in_size, -1)
+        # print(out.size())
         out = self.fc0(out)
         out = F.relu(out)
-        #out = self.fc1(out)  # 1 * 500
-        #out = F.relu(out)
-        out = self.fc2(out)  # 1 * 10
+        out = self.fc1(out)       # bad change
+        out = F.relu(out)
+        out = self.fc2(out)
         out = F.log_softmax(out, dim=1)
         return out
 
