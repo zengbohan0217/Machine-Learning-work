@@ -96,9 +96,9 @@ iteration_number = 0
 
 train_number_epochs = 20
 train_image_dir = '.\BMP600'
-train_data = SN_data.SN_dataset(image_dir=train_image_dir, repeat=1)
+train_data = SN_data.SN_dataset(image_dir=train_image_dir, repeat=1, length=3200)
 train_loader = DataLoader(dataset=train_data, batch_size=40, shuffle=True)
-test_data = SN_data.SN_dataset(image_dir=train_image_dir, repeat=1)
+test_data = SN_data.SN_dataset(image_dir=train_image_dir, repeat=1, length=3200)
 test_loader = DataLoader(dataset=test_data, batch_size=1, shuffle=True)
 
 #开始训练
