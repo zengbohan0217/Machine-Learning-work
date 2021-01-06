@@ -31,7 +31,8 @@ def Ematrix(enemy_list):
             for y in range(200):
                 td[x][y] = get_dis.eucliDist_m([x,y],
                                                [enemy_list[i][0]*10, enemy_list[i][1]*10])
-        te = gaussmf(td, enemy_list[i][2]*10, 0)
+        # te = gaussmf(td, enemy_list[i][2]*10, 0)
+        te = gaussmf(td, enemy_list[i][2], 0)
         for x in range(200):
             for y in range(200):
                 E[x][y] = 1-(1-E[x][y])*(1-te[x][y]/200)

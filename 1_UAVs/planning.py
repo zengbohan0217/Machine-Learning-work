@@ -52,7 +52,7 @@ def update_map(uav, new_enemy_list):
                     for z in range(20):
                         if i != k or j != z:
                             if get_dis.get_dot_line_dis([i,j], [k,z], [new_enemy[0],new_enemy[1]]) < new_enemy[2]:
-                                new_map[i*20+j][k*20+z] += 10000
-                                new_map[k*20+z][i*20+j] += 10000
+                                new_map[i*20+j][k*20+z] += 20/(get_dis.get_dot_line_dis([i,j], [k,z], [new_enemy[0],new_enemy[1]])+1)
+                                new_map[k*20+z][i*20+j] += 20/(get_dis.get_dot_line_dis([i,j], [k,z], [new_enemy[0],new_enemy[1]])+1)
         new_enemy_list.remove(new_enemy)
     uav.map = new_map
