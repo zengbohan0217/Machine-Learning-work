@@ -30,7 +30,9 @@ class LSTM(nn.Module):
         #out_put = self.link2(out_put)
         #out_put = F.relu(out_put)
         #out_put = self.link3(out_put)
-        out_put = F.softmax(h0[0], dim=-1)
+
+        # out_put = F.softmax(h0[0], dim=-1)
+        out_put = F.softmax(h0[1], dim=-1)
         return out_put
 
 def get_dataset():
