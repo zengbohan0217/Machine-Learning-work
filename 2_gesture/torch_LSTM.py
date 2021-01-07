@@ -164,8 +164,8 @@ def new_test(model, epoch, test_data):
     print("Test set Accuracy: {:.2f}%\n".format(100. * correct / len(test_data)))
 
 model = LSTM(BATCH_SIZE)
-#optimizer = optim.Adam(model.parameters(), lr=0.0005)
-optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
+optimizer = optim.Adam(model.parameters(), lr=0.0005)
+# optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
 train_data = new_get_dataset(0, 700)
 test_data = new_get_dataset(700, 300)
 for epoch in range(0, train_num):
