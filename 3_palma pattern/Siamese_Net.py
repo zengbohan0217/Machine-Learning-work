@@ -16,15 +16,15 @@ class SiameseNetwork(nn.Module):
     def __init__(self):
         super().__init__()
         # 1*1*28*28
-        self.conv1 = nn.Conv2d(3, 10, 5)
-        self.conv2 = nn.Conv2d(10, 20, 3)
-        self.conv3 = nn.Conv2d(20, 30, 3)
+        self.conv1 = nn.Conv2d(3, 10, 7)
+        self.conv2 = nn.Conv2d(10, 30, 5)
+        self.conv3 = nn.Conv2d(30, 20, 3)
         # self.fc0 = nn.Linear(1210, 500)
-        self.fc0 = nn.Sequential(nn.Linear(3630, 1000), nn.Dropout(p=0.5))
+        self.fc0 = nn.Sequential(nn.Linear(3380, 1000), nn.Dropout(p=0.5))
         # self.fc1 = nn.Linear(20 * 10 * 10, 500)
         self.fc1 = nn.Sequential(nn.Linear(1000, 500), nn.Dropout(p=0.5))
         # self.fc2 = nn.Linear(500, 20)
-        self.fc2 = nn.Sequential(nn.Linear(500, 40), nn.Dropout(p=0.5))
+        self.fc2 = nn.Sequential(nn.Linear(1000, 50), nn.Dropout(p=0.5))
 
     def forward_once(self, x):
         in_size = x.size(0)
@@ -32,18 +32,20 @@ class SiameseNetwork(nn.Module):
         out = F.relu(out)
         out = F.max_pool2d(out, 2, 2)
         out = F.max_pool2d(out, 2, 2)
-        out = F.max_pool2d(out, 2, 2)
-        out = F.max_pool2d(out, 2, 2)
+        # out = F.max_pool2d(out, 2, 2)
+        # out = F.max_pool2d(out, 2, 2)
         out = self.conv2(out)
         out = F.relu(out)
+        out = F.max_pool2d(out, 2, 2)
         out = self.conv3(out)     # bad change
         out = F.relu(out)
+        out = F.max_pool2d(out, 2, 2)
         out = out.view(in_size, -1)
         # print(out.size())
         out = self.fc0(out)
         out = F.relu(out)
-        out = self.fc1(out)       # bad change
-        out = F.relu(out)
+        # out = self.fc1(out)       # bad change
+        # out = F.relu(out)
         out = self.fc2(out)
         out = F.log_softmax(out, dim=1)
         return out
@@ -103,7 +105,7 @@ counter = []
 loss_history = []
 iteration_number = 0
 
-train_number_epochs = 20
+train_number_epochs = 30
 train_image_dir = '.\BMP600'
 train_data = SN_data.SN_dataset(image_dir=train_image_dir, repeat=1, length=3200)
 train_loader = DataLoader(dataset=train_data, batch_size=40, shuffle=True)
