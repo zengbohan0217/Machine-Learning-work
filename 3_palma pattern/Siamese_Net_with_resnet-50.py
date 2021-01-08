@@ -101,8 +101,8 @@ iteration_number = 0
 
 train_number_epochs = 30
 train_image_dir = '.\BMP600'
-train_data = SN_data.SN_dataset(image_dir=train_image_dir, repeat=1, length=3200)
-train_loader = DataLoader(dataset=train_data, batch_size=40, shuffle=True)
+train_data = SN_data.SN_dataset(image_dir=train_image_dir, repeat=1, length=1600)
+train_loader = DataLoader(dataset=train_data, batch_size=16, shuffle=True)
 test_data = SN_data.SN_dataset(image_dir=train_image_dir, repeat=1, length=1600)
 test_loader = DataLoader(dataset=test_data, batch_size=1, shuffle=True)
 
@@ -121,6 +121,7 @@ for epoch in range(0, train_number_epochs):
             iteration_number +=10
             counter.append(iteration_number)
             loss_history.append(loss_contrastive.item())
+            print(f"epoch{epoch} turn {i} finished")
     print("Epoch number: {} , Current loss: {:.4f}".format(epoch, loss_contrastive.item()))
     accuracy = test(net, DEVICE, test_loader)
     print("Epoch number: {} , test accuracy: {:.4f}".format(epoch, accuracy))
