@@ -6,6 +6,7 @@ import torch.nn.functional as F
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader, Dataset
 import Siamese_Net_dataset as SN_data
+from tqdm import tqdm
 import matplotlib.pyplot as plt
 import torchvision.utils
 import numpy as np
@@ -83,7 +84,7 @@ def test(model, device, test_loader):
             euclidean_distance = F.pairwise_distance(output1, output2, keepdim=True)
             euclidean_distance = torch.mean(euclidean_distance).item()
             # euclidean_distance = euclidean_distance.to(device)
-            if euclidean_distance < 0.5:
+            if euclidean_distance < 0.1:
                 eval_judge = torch.tensor([1])
             else:
                 eval_judge = torch.tensor([0])
@@ -108,6 +109,7 @@ test_loader = DataLoader(dataset=test_data, batch_size=1, shuffle=True)
 
 #开始训练
 for epoch in range(0, train_number_epochs):
+    pbar = tqdm(len(train_loader))
     for i, data in enumerate(train_loader, 0):
         img0, img1, label = data
         # img0维度为torch.Size([32, 1, 100, 100])，32是batch，label为torch.Size([32, 1])
@@ -121,7 +123,9 @@ for epoch in range(0, train_number_epochs):
             iteration_number +=10
             counter.append(iteration_number)
             loss_history.append(loss_contrastive.item())
-            print(f"epoch{epoch} turn {i} finished")
+            # print(f"epoch{epoch} turn {i} finished")
+        pbar.update(1)
+    pbar.close()
     print("Epoch number: {} , Current loss: {:.4f}".format(epoch, loss_contrastive.item()))
     accuracy = test(net, DEVICE, test_loader)
     print("Epoch number: {} , test accuracy: {:.4f}".format(epoch, accuracy))
