@@ -76,7 +76,7 @@ def test(model, device, test_loader):
     correct = 0
     eval_judge = 0
     with torch.no_grad():
-        for i, data in enumerate(test_loader, 0):
+        for i, data in tqdm(enumerate(test_loader, 0)):
             img0, img1, label = data
             img0, img1, label = img0.to(device), img1.to(device), label.to(device)
             output1, output2 = model(img0, img1)
@@ -104,7 +104,7 @@ train_number_epochs = 30
 train_image_dir = '.\BMP600'
 train_data = SN_data.SN_dataset(image_dir=train_image_dir, repeat=1, length=1600)
 train_loader = DataLoader(dataset=train_data, batch_size=16, shuffle=True)
-test_data = SN_data.SN_dataset(image_dir=train_image_dir, repeat=1, length=1600)
+test_data = SN_data.SN_dataset(image_dir=train_image_dir, repeat=1, length=800)
 test_loader = DataLoader(dataset=test_data, batch_size=1, shuffle=True)
 
 #开始训练
