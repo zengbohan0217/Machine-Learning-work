@@ -14,6 +14,7 @@ from PIL import Image
 import cv2
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(DEVICE)
 
 size = (256, 256)
 transform = transforms.Compose([
@@ -41,9 +42,9 @@ class Siamese_Net_R(nn.Module):
     def forward_once(self, x):
         x = x.view(-1, 3, 256, 256)
         out = self.resnet(x)
-        out = self.fc0(out)
-        out = F.relu(out)
-        out = self.fc1(out)
+        # out = self.fc0(out)
+        # out = F.relu(out)
+        # out = self.fc1(out)
         out = F.log_softmax(out, dim=1)
         return out
 
@@ -76,6 +77,12 @@ def test(model, device, test_loader):
     correct = 0
     eval_judge = 0
     with torch.no_grad():
+
+        same_norm_dis = 0
+        same_num = 0
+        dif_norm_dis = 0
+        dif_num = 0
+
         for i, data in tqdm(enumerate(test_loader, 0)):
             img0, img1, label = data
             img0, img1, label = img0.to(device), img1.to(device), label.to(device)
@@ -84,12 +91,23 @@ def test(model, device, test_loader):
             euclidean_distance = F.pairwise_distance(output1, output2, keepdim=True)
             euclidean_distance = torch.mean(euclidean_distance).item()
             # euclidean_distance = euclidean_distance.to(device)
-            if euclidean_distance < 0.1:
+            if abs(euclidean_distance-0.7) < abs(euclidean_distance-1.3):
                 eval_judge = torch.tensor([1])
-            else:
+            elif abs(euclidean_distance-0.7) >= abs(euclidean_distance-1.3):
                 eval_judge = torch.tensor([0])
             eval_judge = eval_judge.to(device)
             correct += eval_judge.eq(label.view_as(torch.tensor(eval_judge))).sum().item()
+            check_label = label.sum().item()
+
+            if check_label == 1:
+                same_norm_dis += euclidean_distance
+                same_num += 1
+            elif check_label == 0:
+                dif_norm_dis += euclidean_distance
+                dif_num += 1
+        print(same_norm_dis/same_num)
+        print(dif_norm_dis/dif_num)
+
     return correct/len(test_loader)
 
 net = Siamese_Net_R().to(DEVICE)

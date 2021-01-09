@@ -43,7 +43,7 @@ class SN_dataset(Dataset):
             label = 1
         else:
             label = 0
-        if i < (self.length // 4):
+        if i < (self.length // 3):
             image_name_1 = group_name_1 + '_' + in_name_1 + '.bmp'
             image_path_1 = os.path.join(self.image_dir, image_name_1)
             image_name_2 = group_name_1 + '_' + in_name_2 + '.bmp'
