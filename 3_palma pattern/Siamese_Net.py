@@ -86,6 +86,12 @@ def test(model, device, test_loader):
     correct = 0
     eval_judge = 0
     with torch.no_grad():
+
+        same_norm_dis = 0
+        same_num = 0
+        dif_norm_dis = 0
+        dif_num = 0
+
         for i, data in enumerate(test_loader, 0):
             img0, img1, label = data
             img0, img1, label = img0.to(device), img1.to(device), label.to(device)
@@ -94,18 +100,30 @@ def test(model, device, test_loader):
             euclidean_distance = F.pairwise_distance(output1, output2, keepdim=True)
             euclidean_distance = torch.mean(euclidean_distance).item()
             # euclidean_distance = euclidean_distance.to(device)
-            if euclidean_distance < 0.5:
+            if abs(euclidean_distance-1) < abs(euclidean_distance-1.3):
                 eval_judge = torch.tensor([1])
-            else:
+            elif abs(euclidean_distance-1) >= abs(euclidean_distance-1.3):
                 eval_judge = torch.tensor([0])
             eval_judge = eval_judge.to(device)
             correct += eval_judge.eq(label.view_as(torch.tensor(eval_judge))).sum().item()
+
+            check_label = label.sum().item()
+            if check_label == 1:
+                same_norm_dis += euclidean_distance
+                same_num += 1
+            elif check_label == 0:
+                dif_norm_dis += euclidean_distance
+                dif_num += 1
+        print(same_norm_dis / same_num)
+        print(dif_norm_dis / dif_num)
+
     return correct/len(test_loader)
 
 #net = SiameseNetwork().cuda() #定义模型且移至GPU
 net = SiameseNetwork().to(DEVICE)
 criterion = ContrastiveLoss() #定义损失函数
-optimizer = optim.Adam(net.parameters(), lr = 0.0005) #定义优化器
+# optimizer = optim.Adam(net.parameters(), lr = 0.0005) #定义优化器
+optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
 counter = []
 loss_history = []
