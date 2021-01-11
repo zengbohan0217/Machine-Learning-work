@@ -76,7 +76,7 @@ class ContrastiveLoss(torch.nn.Module):
         euclidean_distance = F.pairwise_distance(output1, output2, keepdim = True)
         # loss_contrastive = torch.mean((1-label) * torch.pow(euclidean_distance, 2) +
         #                               (label) * torch.pow(torch.clamp(self.margin - euclidean_distance, min=0.0), 2))
-        loss_contrastive = torch.mean((label) * torch.pow(euclidean_distance, 2) +
+        loss_contrastive = torch.mean(1.4 * (label) * torch.pow(euclidean_distance, 2) +
                                       (1 - label) * torch.pow(torch.clamp(self.margin - euclidean_distance, min=0.0), 2))
 
         return loss_contrastive
@@ -128,7 +128,7 @@ def test(model, device, test_loader):
 net = SiameseNetwork().to(DEVICE)
 criterion = ContrastiveLoss() #定义损失函数
 # optimizer = optim.Adam(net.parameters(), lr = 0.0005) #定义优化器
-optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+optimizer = optim.SGD(net.parameters(), lr=0.0005, momentum=0.9)
 
 counter = []
 loss_history = []
