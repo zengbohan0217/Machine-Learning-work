@@ -67,7 +67,7 @@ class ContrastiveLoss(torch.nn.Module):
         euclidean_distance = F.pairwise_distance(output1, output2, keepdim = True)
         # loss_contrastive = torch.mean((1-label) * torch.pow(euclidean_distance, 2) +
         #                               (label) * torch.pow(torch.clamp(self.margin - euclidean_distance, min=0.0), 2))
-        loss_contrastive = torch.mean((label) * torch.pow(euclidean_distance, 2) +
+        loss_contrastive = torch.mean(1.46 * label * torch.pow(euclidean_distance, 2) +
                                       (1 - label) * torch.pow(torch.clamp(self.margin - euclidean_distance, min=0.0), 2))
 
         return loss_contrastive
@@ -80,8 +80,10 @@ def test(model, device, test_loader):
 
         same_norm_dis = 0
         same_num = 0
+        same_correct = 0
         dif_norm_dis = 0
         dif_num = 0
+        dif_correct = 0
 
         for i, data in tqdm(enumerate(test_loader, 0)):
             img0, img1, label = data
@@ -91,9 +93,9 @@ def test(model, device, test_loader):
             euclidean_distance = F.pairwise_distance(output1, output2, keepdim=True)
             euclidean_distance = torch.mean(euclidean_distance).item()
             # euclidean_distance = euclidean_distance.to(device)
-            if abs(euclidean_distance-0.7) < abs(euclidean_distance-1.3):
+            if abs(euclidean_distance-0) < abs(euclidean_distance-2):
                 eval_judge = torch.tensor([1])
-            elif abs(euclidean_distance-0.7) >= abs(euclidean_distance-1.3):
+            elif abs(euclidean_distance-0) >= abs(euclidean_distance-2):
                 eval_judge = torch.tensor([0])
             eval_judge = eval_judge.to(device)
             correct += eval_judge.eq(label.view_as(torch.tensor(eval_judge))).sum().item()
@@ -101,18 +103,22 @@ def test(model, device, test_loader):
 
             if check_label == 1:
                 same_norm_dis += euclidean_distance
+                same_correct += eval_judge.eq(label.view_as(torch.tensor(eval_judge))).sum().item()
                 same_num += 1
             elif check_label == 0:
                 dif_norm_dis += euclidean_distance
+                dif_correct += eval_judge.eq(label.view_as(torch.tensor(eval_judge))).sum().item()
                 dif_num += 1
-        print(same_norm_dis/same_num)
-        print(dif_norm_dis/dif_num)
+        print(f"size of same is {same_num / (same_num + dif_num)}")
+        print(f"accuracy of same is {same_correct / same_num}")
+        print(f"accuracy of dif is {dif_correct / dif_num}")
 
     return correct/len(test_loader)
 
 net = Siamese_Net_R().to(DEVICE)
 criterion = ContrastiveLoss() #定义损失函数
-optimizer = optim.Adam(net.parameters(), lr=0.0005) #定义优化器
+# optimizer = optim.Adam(net.parameters(), lr=0.0005) #定义优化器
+optimizer = optim.SGD(net.parameters(), lr=0.0005, momentum=0.9)
 
 counter = []
 loss_history = []
