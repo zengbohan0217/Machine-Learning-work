@@ -3,9 +3,9 @@ import get_dis
 class UAV(object):
     initial_pos = None
     enemy_find_list = []
-    pos_enemy_loss = [0]*400                                  # 在敌人范围内的点会有额外的距离加成
+    pos_enemy_loss = [0]*400                                  # Points within enemy range have an additional risk
     now_pos = None
-    map = None                                                 # 假设一张图上有400个标准坐标点,map为点与点之间的距离
+    map = None                                                # Assume that there are 400 standard coordinate points on a graph. Map is the distance between points
     visual_field = None
     step_length = None
 
@@ -16,7 +16,7 @@ class UAV(object):
         self.step_length = step_input
         self.visual_field = visual_input
 
-    def get_dis_value(self):                                    # 这个函数服务于dijskra函数，获得当前pos与其他点距离,结合map使用
+    def get_dis_value(self):                                    # This function serves the dijskra function to get the distance between the current pos and other points, which is used in combination with the map
         dis_value = [0]*400
         for i in range(20):
             for j in range(20):
@@ -35,8 +35,8 @@ class UAV(object):
         """
         visited = [0]*400
         path_record = {i:[] for i in range(400)}
-        min_dis_value = self.get_dis_value()                    # 初始化当前点与其他所有点的最短路
-        for i in range(400):                                    # 对map上所有点dijskra
+        min_dis_value = self.get_dis_value()                    # Initializes the shortest circuit between the current point and all other points
+        for i in range(400):                                    # dijskra
             min_num = 99999
             for j in range(400):
                 if not visited[j] and min_dis_value[j] < min_num:
@@ -50,4 +50,4 @@ class UAV(object):
                     path_record[j] = path_record[new_min_index][:]
 
         return path_record
-                                                                # 遇到敌人额外的距离加成在map的更新中处理，即在plan函数中
+        # The additional risk of encountering an enemy is handled in the map update, that is in the plan function

@@ -3,7 +3,8 @@ import numpy as np
 import get_dis
 import enemy_record
 
-def plan(inital_pos, input_map, target):                         # inital_pos与target都是大小为2的列表
+def plan(inital_pos, input_map, target):                         # inital_pos and target are both lists of size 2
+    # This function gets the final path
     uav = UAV.UAV(inital_pos, input_map, 1, 2)
     path_record = []
     path_record.append(inital_pos)
@@ -36,7 +37,6 @@ def plan(inital_pos, input_map, target):                         # inital_pos与
         print(new_enemy_list)
     print(uav.map)
     return path_record
-                                                                 # 此函数获取最终路线
 
 def update_map(uav, new_enemy_list):
     new_map = np.array(uav.map, copy=True)
