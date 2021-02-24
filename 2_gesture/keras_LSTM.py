@@ -7,12 +7,12 @@ import datetime
 import numpy as np
 
 MODEL_INPUT_TIME_SIZE = 3
-INPUT_DIM = 2                               # 一次同时喂入同一个时间点下的加速度和陀螺仪信息
+INPUT_DIM = 2
 BATCH_SIZE = 100
 
 def get_model():
     simple_lstm_model = models.Sequential([
-        layers.LSTM(20, input_shape=[MODEL_INPUT_TIME_SIZE, INPUT_DIM]),          # 输入2*1的矩阵
+        layers.LSTM(20, input_shape=[MODEL_INPUT_TIME_SIZE, INPUT_DIM]),
         layers.Dense(20),
         layers.Dense(8, activation='softmax')
         #layers.Dense(1, activation='softmax')

@@ -64,7 +64,7 @@ def train_with_dataloader(model, optimizer, trainloader, epoch):
         criteria = nn.CrossEntropyLoss()
         loss = criteria(output, target)
         loss.backward()
-        pred = output.max(1, keepdim=True)[1]  # 找到概率最大的下标
+        pred = output.max(1, keepdim=True)[1]  # Find the index with the highest probability
         correct += pred.eq(target.view_as(pred)).sum().item()
         optimizer.step()
         if (batch_idx + 1) % 10 == 0:
@@ -79,8 +79,8 @@ def test_with_dataloader(model, testloader):
     with torch.no_grad():
         for data, target in testloader:
             output = model(data)
-            test_loss += F.nll_loss(output, target, reduction='sum')  # 将一批的损失相加
-            pred = output.max(1, keepdim=True)[1]  # 找到概率最大的下标
+            test_loss += F.nll_loss(output, target, reduction='sum')
+            pred = output.max(1, keepdim=True)[1]  # Find the index with the highest probability
             correct += pred.eq(target.view_as(pred)).sum().item()
 
     test_loss /= len(testloader.dataset)

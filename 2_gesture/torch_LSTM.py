@@ -21,7 +21,7 @@ class LSTM(nn.Module):
         self.batch_size = batch_size
 
     def forward(self, x):
-        # x的size是[sequence_len, 1, 6]，其中6分别代表speed angle
+        # The size of x is [sequence_len, 1, 6], where 6 includes speed and Angle information
         hidden = (torch.randn(1, self.batch_size, 8),
                   torch.randn(1, self.batch_size, 8))
         out, h0 = self.lstm(x, hidden)
