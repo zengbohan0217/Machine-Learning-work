@@ -7,65 +7,65 @@ import matplotlib.pyplot as plt
 
 def show_image(title, image):
     '''
-    调用matplotlib显示RGB图片
-    :param title: 图像标题
-    :param image: 图像的数据
+    Call matplotlib to display RGB images
+    :param title: The image title
+    :param image: The image data
     :return:
     '''
     # plt.figure("show_image")
     # print(image.dtype)
     plt.imshow(image)
-    plt.axis('on')  # 关掉坐标轴为 off
-    plt.title(title)  # 图像题目
+    plt.axis('on')  # Turn off the axis is 'off'
+    plt.title(title)
     plt.show()
 
 def cv_show_image(title, image):
     '''
-    调用OpenCV显示RGB图片
-    :param title: 图像标题
-    :param image: 输入RGB图像
+    Call OpenCV to display RGB images
+    :param title: The image title
+    :param image: The image data
     :return:
     '''
     channels = image.shape[-1]
     if channels == 3:
-        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)  # 将BGR转为RGB
+        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)  # Convert BGR to RGB
     cv2.imshow(title, image)
     cv2.waitKey(0)
 
 def read_image(filename, resize_height=None, resize_width=None, normalization=False):
     '''
-    读取图片数据,默认返回的是uint8,[0,255]
+    Read the image data, the default return is uint8,[0,255]
     :param filename:
     :param resize_height:
     :param resize_width:
-    :param normalization:是否归一化到[0.,1.0]
-    :return: 返回的RGB图片数据
+    :param normalization: Whether to normalize to [0.,1.0]
+    :return: The RGB image data returned
     '''
     bgr_image = cv2.imread(filename)
     # bgr_image = cv2.imread(filename,cv2.IMREAD_IGNORE_ORIENTATION|cv2.IMREAD_COLOR)
     if bgr_image is None:
         print("Warning:不存在:{}", filename)
         return None
-    if len(bgr_image.shape) == 2:  # 若是灰度图则转为三通道
+    if len(bgr_image.shape) == 2:  # If the grayscale map is converted to three channels
         print("Warning:gray image", filename)
         bgr_image = cv2.cvtColor(bgr_image, cv2.COLOR_GRAY2BGR)
-    rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)  # 将BGR转为RGB
+    rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)  # Convert BGR to RGB
     # show_image(filename,rgb_image)
     # rgb_image=Image.open(filename)
     rgb_image = resize_image(rgb_image, resize_height, resize_width)
     #rgb_image = resize_image(1, resize_height, resize_width)
     rgb_image = np.asanyarray(rgb_image)
     if normalization:
-        # 不能写成:rgb_image=rgb_image/255
+        # Can not write:rgb_image=rgb_image/255
         rgb_image = rgb_image / 255.0
     # show_image("src resize image",image)
     return rgb_image
 
 def fast_read_image_roi(filename, orig_rect, ImreadModes=cv2.IMREAD_COLOR, normalization=False):
     '''
-    快速读取图片的方法
-    :param filename: 图片路径
-    :param orig_rect:原始图片的感兴趣区域rect
+    A quick way to read pictures
+    :param filename: Image path
+    :param orig_rect:
     :param ImreadModes: IMREAD_UNCHANGED
                         IMREAD_GRAYSCALE
                         IMREAD_COLOR
@@ -79,10 +79,10 @@ def fast_read_image_roi(filename, orig_rect, ImreadModes=cv2.IMREAD_COLOR, norma
                         IMREAD_REDUCED_GRAYSCALE_8
                         IMREAD_REDUCED_COLOR_8
                         IMREAD_IGNORE_ORIENTATION
-    :param normalization: 是否归一化
-    :return: 返回感兴趣区域ROI
+    :param normalization: Whether to normalize
+    :return:
     '''
-    # 当采用IMREAD_REDUCED模式时，对应rect也需要缩放
+    # When IMREAD_REDUCED mode is used, the corresponding RECT also needs to be scaled
     scale = 1
     if ImreadModes == cv2.IMREAD_REDUCED_COLOR_2 or ImreadModes == cv2.IMREAD_REDUCED_COLOR_2:
         scale = 1 / 2
@@ -94,15 +94,15 @@ def fast_read_image_roi(filename, orig_rect, ImreadModes=cv2.IMREAD_COLOR, norma
     rect = rect.astype(int).tolist()
     bgr_image = cv2.imread(filename, flags=ImreadModes)
     if bgr_image is None:
-        print("Warning:不存在:{}", filename)
+        print("Warning:do not exist:{}", filename)
         return None
     if len(bgr_image.shape) == 3:  #
-        rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)  # 将BGR转为RGB
+        rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)  # Convert BGR to RGB
     else:
-        rgb_image = bgr_image  # 若是灰度图
+        rgb_image = bgr_image  # If the grayscale map
     rgb_image = np.asanyarray(rgb_image)
     if normalization:
-        # 不能写成:rgb_image=rgb_image/255
+        # Can not write:rgb_image=rgb_image/255
         rgb_image = rgb_image / 255.0
     roi_image = get_rect_image(rgb_image, rect)
     # show_image_rect("src resize image",rgb_image,rect)
@@ -119,7 +119,7 @@ def resize_image(image, resize_height, resize_width):
     image_shape = np.shape(image)
     height = image_shape[0]
     width = image_shape[1]
-    if (resize_height is None) and (resize_width is None):  # 错误写法：resize_height and resize_width is None
+    if (resize_height is None) and (resize_width is None):  # Can not write：resize_height and resize_width is None
         return image
     if resize_height is None:
         resize_height = int(height * resize_width / width)
@@ -149,11 +149,11 @@ def get_rect_image(image, rect):
 
 def scale_rect(orig_rect, orig_shape, dest_shape):
     '''
-    对图像进行缩放时，对应的rectangle也要进行缩放
-    :param orig_rect: 原始图像的rect=[x,y,w,h]
-    :param orig_shape: 原始图像的维度shape=[h,w]
-    :param dest_shape: 缩放后图像的维度shape=[h,w]
-    :return: 经过缩放后的rectangle
+    When the image is scaled, the corresponding Rectangle is also scaled
+    :param orig_rect: Rect of original image =[x,y,w,h]
+    :param orig_shape: Dimension of original image SHAPE =[H, W]
+    :param dest_shape: The dimension of the zoomed image SHAPE=[h,w]
+    :return: A resized rectangle
     '''
     new_x = int(orig_rect[0] * dest_shape[1] / orig_shape[1])
     new_y = int(orig_rect[1] * dest_shape[0] / orig_shape[0])
@@ -182,7 +182,7 @@ def rgb_to_gray(image):
 def save_image(image_path, rgb_image, toUINT8=True):
     if toUINT8:
         rgb_image = np.asanyarray(rgb_image * 255, dtype=np.uint8)
-    if len(rgb_image.shape) == 2:  # 若是灰度图则转为三通道
+    if len(rgb_image.shape) == 2:  # If the grayscale map is converted to three channels
         bgr_image = cv2.cvtColor(rgb_image, cv2.COLOR_GRAY2BGR)
     else:
         bgr_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR)
@@ -190,7 +190,7 @@ def save_image(image_path, rgb_image, toUINT8=True):
 
 def combime_save_image(orig_image, dest_image, out_dir, name, prefix):
     '''
-    命名标准：out_dir/name_prefix.jpg
+    Naming standards：out_dir/name_prefix.jpg
     :param orig_image:
     :param dest_image:
     :param image_path:

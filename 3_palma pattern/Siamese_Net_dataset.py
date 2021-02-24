@@ -63,21 +63,14 @@ class SN_dataset(Dataset):
 
     def load_data(self, path, resize_height, resize_width, normalization):
         '''
-        加载数据
-        :param path:
-        :param resize_height:
-        :param resize_width:
-        :param normalization: 是否归一化
-        :return:
+        Load the data
         '''
         image = image_processing.read_image(path, resize_height, resize_width, normalization)
         return image
 
     def data_preproccess(self, data):
         '''
-        数据预处理
-        :param data:
-        :return:
+        Data preprocessing
         '''
         data = self.toTensor(data)
         return data

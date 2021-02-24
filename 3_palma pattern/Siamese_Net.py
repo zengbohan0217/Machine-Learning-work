@@ -124,10 +124,10 @@ def test(model, device, test_loader):
 
     return correct/len(test_loader)
 
-#net = SiameseNetwork().cuda() #定义模型且移至GPU
+# net = SiameseNetwork().cuda() # Set the Model to the GPU
 net = SiameseNetwork().to(DEVICE)
-criterion = ContrastiveLoss() #定义损失函数
-# optimizer = optim.Adam(net.parameters(), lr = 0.0005) #定义优化器
+criterion = ContrastiveLoss()
+# optimizer = optim.Adam(net.parameters(), lr = 0.0005)
 optimizer = optim.SGD(net.parameters(), lr=0.0005, momentum=0.9)
 
 counter = []
@@ -141,12 +141,12 @@ train_loader = DataLoader(dataset=train_data, batch_size=40, shuffle=True)
 test_data = SN_data.SN_dataset(image_dir=train_image_dir, repeat=1, length=1600)
 test_loader = DataLoader(dataset=test_data, batch_size=1, shuffle=True)
 
-#开始训练
+# Start training
 for epoch in range(0, train_number_epochs):
     for i, data in enumerate(train_loader, 0):
         img0, img1, label = data
-        # img0维度为torch.Size([32, 1, 100, 100])，32是batch，label为torch.Size([32, 1])
-        img0, img1, label = img0.to(DEVICE), img1.to(DEVICE), label.to(DEVICE)  # 数据移至GPU
+        # The img0 dimension is torch.size([32, 1, 100, 100]), 32 is batch, label is torch.Size([32, 1])
+        img0, img1, label = img0.to(DEVICE), img1.to(DEVICE), label.to(DEVICE)
         optimizer.zero_grad()
         output1, output2 = net(img0, img1)
         loss_contrastive = criterion(output1, output2, label)

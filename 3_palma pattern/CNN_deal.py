@@ -1,4 +1,3 @@
-import get_dataset
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -54,7 +53,7 @@ def train(model, device, train_loader, optimizer, epoch):
         output = model(data)
         loss = F.nll_loss(output, target)
         loss.backward()
-        pred = output.max(1, keepdim=True)[1]  # 找到概率最大的下标
+        pred = output.max(1, keepdim=True)[1]  # Find the index with the highest probability
         correct += pred.eq(target.view_as(pred)).sum().item()
         optimizer.step()
         if (batch_idx + 1) % 10 == 0:
@@ -70,8 +69,8 @@ def test(model, device, test_loader):
         for data, target in test_loader:
             data, target = data.to(device), target.to(device)
             output = model(data)
-            test_loss += F.nll_loss(output, target, reduction='sum')  # 将一批的损失相加
-            pred = output.max(1, keepdim=True)[1]  # 找到概率最大的下标
+            test_loss += F.nll_loss(output, target, reduction='sum')
+            pred = output.max(1, keepdim=True)[1]  # Find the index with the highest probability
             correct += pred.eq(target.view_as(pred)).sum().item()
 
     test_loss /= len(test_loader.dataset)
@@ -88,7 +87,7 @@ test_image_dir = r'.\test_data'
 test_data = my_get.Test_Dataset(image_dir=test_image_dir, repeat=1)
 test_loader = DataLoader(dataset=test_data, batch_size=1, shuffle=True)
 
-# 最后开始训练和测试
+# Finally start training and testing
 for epoch in range(1, EPOCHS + 1):
     train(model,  DEVICE, train_loader, optimizer, epoch)
     #train(model, DEVICE, test_loader, optimizer, epoch)

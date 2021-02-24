@@ -116,8 +116,8 @@ def test(model, device, test_loader):
     return correct/len(test_loader)
 
 net = Siamese_Net_R().to(DEVICE)
-criterion = ContrastiveLoss() #定义损失函数
-# optimizer = optim.Adam(net.parameters(), lr=0.0005) #定义优化器
+criterion = ContrastiveLoss()
+# optimizer = optim.Adam(net.parameters(), lr=0.0005)
 optimizer = optim.SGD(net.parameters(), lr=0.0005, momentum=0.9)
 
 counter = []
@@ -136,8 +136,8 @@ for epoch in range(0, train_number_epochs):
     pbar = tqdm(len(train_loader))
     for i, data in enumerate(train_loader, 0):
         img0, img1, label = data
-        # img0维度为torch.Size([32, 1, 100, 100])，32是batch，label为torch.Size([32, 1])
-        img0, img1, label = img0.to(DEVICE), img1.to(DEVICE), label.to(DEVICE)  # 数据移至GPU
+        # The img0 dimension is torch.size([32, 1, 100, 100]), 32 is batch, label is torch.Size([32, 1])
+        img0, img1, label = img0.to(DEVICE), img1.to(DEVICE), label.to(DEVICE)
         optimizer.zero_grad()
         output1, output2 = net(img0, img1)
         loss_contrastive = criterion(output1, output2, label)
