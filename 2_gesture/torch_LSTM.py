@@ -14,16 +14,17 @@ train_num = 50
 class LSTM(nn.Module):
     def __init__(self, batch_size):
         super().__init__()
-        self.lstm = nn.LSTM(30, 8)
+        self.lstm = nn.LSTM(30, 8)                     # [input_size, output_size, num_layers]
+        # bidirectional – If True, becomes a bidirectional LSTM. Default: False
         self.link1 = nn.Linear(100, 50)
         self.link2 = nn.Linear(50, 10)
         self.link3 = nn.Linear(10, 8)
         self.batch_size = batch_size
 
     def forward(self, x):
-        # The size of x is [sequence_len, 1, 6], where 6 includes speed and Angle information
+        # The size of x is [sequence_len, 1, group_size * 6], where 6 includes speed and Angle information
         hidden = (torch.randn(1, self.batch_size, 8),
-                  torch.randn(1, self.batch_size, 8))
+                  torch.randn(1, self.batch_size, 8))    # size of h0 and c0 is [num_layers * num_directions, batch, hidden_size]
         out, h0 = self.lstm(x, hidden)
         #out_put = self.link1(h0[0])
         #out_put = F.relu(out_put)
